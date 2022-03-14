@@ -25,4 +25,6 @@ k8s-yaml/*
 src/cert/
 src/pb/
 
+extra
+
 images/
