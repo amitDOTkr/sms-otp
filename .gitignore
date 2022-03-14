@@ -17,6 +17,7 @@
 # vendor/
 
 tmp/
+tmp/*
 .vscode/
 favicon.ico
 k8s-yaml/
