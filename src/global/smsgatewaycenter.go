@@ -9,23 +9,24 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/amitdotkr/sms-otp/src/entities"
 )
 
-type ResponseBody struct {
-	Status     string `json:"status"`
-	StatusCode string `json:"statusCode"`
-	Reason     string `json:"reason"`
-}
+// type ResponseBody struct {
+// 	Status     string `json:"status"`
+// 	StatusCode string `json:"statusCode"`
+// 	Reason     string `json:"reason"`
+// }
 
-func SmsGatewayCenter(mobile, otp string) {
+func SmsGatewayCenter(mobile, otp string, response chan entities.ResponseBody) {
 
-	defer wg.Done()
+	// defer wg.Done()
 
 	gateway_url := "https://www.smsgateway.center/SMSApi/rest/send"
-	// str1 := "Your SMSGatewayCenter OTP code is %s Please use the code within 2 minutes. - Demo Message."
+
+	// Adding Random otp no. in DLT template sms string.
 	msg := fmt.Sprintf(SMS_OTP_MSG, otp)
-	// msg1 := fmt.Sprintf(str1, otp)
-	// fmt.Printf("msg1 string: %v", msg1)
 
 	data := url.Values{}
 	data.Add("userId", SMSGAT_USER)
@@ -38,7 +39,6 @@ func SmsGatewayCenter(mobile, otp string) {
 	data.Add("duplicateCheck", "true")
 	data.Add("format", "json")
 
-	// payload := strings.NewReader("userId=amitdotkr&password=wdzo9poH&senderId=SMSGAT&sendMethod=simpleMsg&msgType=text&mobile=919467783277&msg=This%20is%20my%20first%20message%20with%20SMSGateway.Center&duplicateCheck=true&format=json")
 	payload := strings.NewReader(data.Encode())
 
 	req, _ := http.NewRequest("POST", gateway_url, payload)
@@ -50,13 +50,10 @@ func SmsGatewayCenter(mobile, otp string) {
 	if err != nil {
 		log.Println(err)
 	}
-	// res.Body()
 
 	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
-	// resp := []byte(body)
-
-	var responseBody ResponseBody
+	var responseBody entities.ResponseBody
 
 	json.Unmarshal([]byte(body), &responseBody)
 
@@ -64,13 +61,6 @@ func SmsGatewayCenter(mobile, otp string) {
 		log.Printf("SmsGatewayCenter Api: Unable to send sms-otp, statusCode: %s & reason: %s", responseBody.StatusCode, responseBody.Reason)
 	}
 
-	// resbody := string(body)
-	// var jsonMap map[string]interface{}
-	// json.Unmarshal([]byte(resbody), &jsonMap)
-
-	// status := jsonMap["status"]
-
-	// fmt.Println(status)
-	// fmt.Println(string(body))
+	response <- responseBody
 
 }

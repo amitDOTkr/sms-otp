@@ -11,6 +11,9 @@ message OtpRequest {
 }
 
 message OtpResponse {
+    string status = 1;
+    string status_code = 2;
+    string reason =3;
     // string otp = 1;
 }
 

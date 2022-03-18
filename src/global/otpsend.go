@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/amitdotkr/sms-otp/src/entities"
 	"github.com/amitdotkr/sms-otp/src/pb"
 )
 
@@ -18,15 +19,20 @@ func (*Server) OtpSend(ctx context.Context, req *pb.OtpRequest) (*pb.OtpResponse
 
 	otp := GenerateOtp()
 
-	// log.Printf("otp generated: %v", otp)
-
-	wg.Add(2)
+	wg.Add(1)
 	go OtpSaveInRedis(mobile_number, otp)
 
-	go SmsGatewayCenter(mobile_number, strconv.Itoa(otp))
+	response := make(chan entities.ResponseBody)
+	go SmsGatewayCenter(mobile_number, strconv.Itoa(otp), response)
 
 	wg.Wait()
-	res := &pb.OtpResponse{}
+	responseBody := <-response
+	res := &pb.OtpResponse{
+		Status:     responseBody.Status,
+		StatusCode: responseBody.StatusCode,
+		Reason:     responseBody.Reason,
+	}
+	close(response)
 	return res, nil
 }
 

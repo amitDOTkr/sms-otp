@@ -1,8 +1,10 @@
 package global
 
 import (
+	// "log"
 	"os"
 	"strconv"
+	// "github.com/joho/godotenv"
 )
 
 var REDIS_URL string

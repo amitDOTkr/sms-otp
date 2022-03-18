@@ -26,5 +26,7 @@ src/cert/
 src/pb/
 
 extra
+tmp/main
+tmp/build-errors.log
 
 images/

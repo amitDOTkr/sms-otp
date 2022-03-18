@@ -2,7 +2,7 @@ package global
 
 import (
 	"context"
-	"log"
+	// "log"
 
 	"github.com/amitdotkr/sms-otp/src/pb"
 )
@@ -18,8 +18,6 @@ func (*Server) OtpValidate(ctx context.Context, req *pb.OtpValidateRequest) (*pb
 	if res {
 		DB.Del(mobile_number)
 	}
-
-	log.Printf("otp res: %v", res)
 
 	return &pb.OtpValidateResponse{Validated: res}, nil
 }
